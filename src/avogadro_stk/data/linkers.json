@@ -1,0 +1,351 @@
+{
+  "comment": "Curated building blocks for avogadro-stk. `topicity` is the number of functional groups the named stk factory must find; tests/test_library.py enforces this, so do not edit a topicity without re-running the tests.",
+  "linkers": [
+    {
+      "id": "benzaldehyde",
+      "name": "Benzaldehyde",
+      "smiles": "O=Cc1ccccc1",
+      "topicity": 1,
+      "factory": "AldehydeFactory",
+      "tags": ["cap", "aldehyde"]
+    },
+    {
+      "id": "terephthalaldehyde",
+      "name": "Terephthalaldehyde",
+      "aliases": ["TPA", "benzene-1,4-dicarbaldehyde"],
+      "smiles": "O=Cc1ccc(C=O)cc1",
+      "topicity": 2,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "cage", "polymer", "macrocycle", "aldehyde"]
+    },
+    {
+      "id": "biphenyldicarbaldehyde",
+      "name": "Biphenyl-4,4'-dicarbaldehyde",
+      "smiles": "O=Cc1ccc(-c2ccc(C=O)cc2)cc1",
+      "topicity": 2,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "cage", "aldehyde"]
+    },
+    {
+      "id": "dhta",
+      "name": "2,5-Dihydroxyterephthalaldehyde",
+      "aliases": ["DHTA"],
+      "smiles": "O=Cc1cc(O)c(C=O)cc1O",
+      "topicity": 2,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "aldehyde"]
+    },
+    {
+      "id": "dmta",
+      "name": "2,5-Dimethoxyterephthalaldehyde",
+      "smiles": "O=Cc1cc(OC)c(C=O)cc1OC",
+      "topicity": 2,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "aldehyde"]
+    },
+    {
+      "id": "glutaraldehyde",
+      "name": "Glutaraldehyde",
+      "smiles": "O=CCCCC=O",
+      "topicity": 2,
+      "factory": "AldehydeFactory",
+      "tags": ["polymer", "aldehyde", "flexible"]
+    },
+    {
+      "id": "tfb",
+      "name": "1,3,5-Triformylbenzene",
+      "aliases": ["TFB"],
+      "smiles": "O=Cc1cc(C=O)cc(C=O)c1",
+      "topicity": 3,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "cage", "aldehyde"]
+    },
+    {
+      "id": "tfpb",
+      "name": "1,3,5-Tris(4-formylphenyl)benzene",
+      "smiles": "O=Cc1ccc(-c2cc(-c3ccc(C=O)cc3)cc(-c3ccc(C=O)cc3)c2)cc1",
+      "topicity": 3,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "cage", "aldehyde"]
+    },
+    {
+      "id": "tp",
+      "name": "1,3,5-Triformylphloroglucinol",
+      "aliases": ["Tp"],
+      "smiles": "O=Cc1c(O)c(C=O)c(O)c(C=O)c1O",
+      "topicity": 3,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "aldehyde", "keto-enamine"]
+    },
+    {
+      "id": "tfpm",
+      "name": "Tetrakis(4-formylphenyl)methane",
+      "smiles": "O=Cc1ccc(cc1)C(c1ccc(C=O)cc1)(c1ccc(C=O)cc1)c1ccc(C=O)cc1",
+      "topicity": 4,
+      "factory": "AldehydeFactory",
+      "tags": ["cof", "cage", "aldehyde"]
+    },
+    {
+      "id": "aniline",
+      "name": "Aniline",
+      "smiles": "Nc1ccccc1",
+      "topicity": 1,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cap", "amine"]
+    },
+    {
+      "id": "pda",
+      "name": "p-Phenylenediamine",
+      "aliases": ["PDA"],
+      "smiles": "Nc1ccc(N)cc1",
+      "topicity": 2,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cof", "cage", "polymer", "macrocycle", "amine"]
+    },
+    {
+      "id": "benzidine",
+      "name": "Benzidine",
+      "smiles": "Nc1ccc(-c2ccc(N)cc2)cc1",
+      "topicity": 2,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cof", "cage", "amine"]
+    },
+    {
+      "id": "oda",
+      "name": "4,4'-Oxydianiline",
+      "aliases": ["ODA"],
+      "smiles": "Nc1ccc(Oc2ccc(N)cc2)cc1",
+      "topicity": 2,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["polymer", "amine"]
+    },
+    {
+      "id": "ethylenediamine",
+      "name": "Ethylenediamine",
+      "smiles": "NCCN",
+      "topicity": 2,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cage", "polymer", "amine", "flexible"]
+    },
+    {
+      "id": "dach",
+      "name": "(1R,2R)-1,2-Diaminocyclohexane",
+      "smiles": "N[C@@H]1CCCC[C@H]1N",
+      "topicity": 2,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cage", "amine", "chiral"]
+    },
+    {
+      "id": "tapb",
+      "name": "1,3,5-Tris(4-aminophenyl)benzene",
+      "aliases": ["TAPB"],
+      "smiles": "Nc1ccc(-c2cc(-c3ccc(N)cc3)cc(-c3ccc(N)cc3)c2)cc1",
+      "topicity": 3,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cof", "cage", "amine"]
+    },
+    {
+      "id": "tren",
+      "name": "Tris(2-aminoethyl)amine",
+      "aliases": ["TREN"],
+      "smiles": "NCCN(CCN)CCN",
+      "topicity": 3,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cage", "amine", "flexible"]
+    },
+    {
+      "id": "tapm",
+      "name": "Tetrakis(4-aminophenyl)methane",
+      "smiles": "Nc1ccc(cc1)C(c1ccc(N)cc1)(c1ccc(N)cc1)c1ccc(N)cc1",
+      "topicity": 4,
+      "factory": "PrimaryAminoFactory",
+      "tags": ["cof", "cage", "amine"]
+    },
+    {
+      "id": "phenylboronic",
+      "name": "Phenylboronic acid",
+      "smiles": "OB(O)c1ccccc1",
+      "topicity": 1,
+      "factory": "BoronicAcidFactory",
+      "tags": ["cap", "boronic"]
+    },
+    {
+      "id": "bdba",
+      "name": "1,4-Benzenediboronic acid",
+      "aliases": ["BDBA"],
+      "smiles": "OB(O)c1ccc(B(O)O)cc1",
+      "topicity": 2,
+      "factory": "BoronicAcidFactory",
+      "tags": ["cof", "boronic"]
+    },
+    {
+      "id": "bpdba",
+      "name": "4,4'-Biphenyldiboronic acid",
+      "smiles": "OB(O)c1ccc(-c2ccc(B(O)O)cc2)cc1",
+      "topicity": 2,
+      "factory": "BoronicAcidFactory",
+      "tags": ["cof", "boronic"]
+    },
+    {
+      "id": "catechol",
+      "name": "Catechol",
+      "smiles": "Oc1ccccc1O",
+      "topicity": 1,
+      "factory": "DiolFactory",
+      "tags": ["cap", "diol"]
+    },
+    {
+      "id": "thb",
+      "name": "1,2,4,5-Tetrahydroxybenzene",
+      "smiles": "Oc1cc(O)c(O)cc1O",
+      "topicity": 2,
+      "factory": "DiolFactory",
+      "tags": ["cof", "diol"]
+    },
+    {
+      "id": "hhtp",
+      "name": "2,3,6,7,10,11-Hexahydroxytriphenylene",
+      "aliases": ["HHTP"],
+      "smiles": "Oc1cc2c(cc1O)-c1cc(O)c(O)cc1-c1cc(O)c(O)cc1-2",
+      "topicity": 3,
+      "factory": "DiolFactory",
+      "tags": ["cof", "diol"]
+    },
+    {
+      "id": "bromobenzene",
+      "name": "Bromobenzene",
+      "smiles": "Brc1ccccc1",
+      "topicity": 1,
+      "factory": "BromoFactory",
+      "tags": ["cap", "bromo"]
+    },
+    {
+      "id": "dibromobenzene",
+      "name": "1,4-Dibromobenzene",
+      "smiles": "Brc1ccc(Br)cc1",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "macrocycle", "bromo"]
+    },
+    {
+      "id": "dibromobiphenyl",
+      "name": "4,4'-Dibromobiphenyl",
+      "smiles": "Brc1ccc(-c2ccc(Br)cc2)cc1",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "bromo"]
+    },
+    {
+      "id": "dibromothiophene",
+      "name": "2,5-Dibromothiophene",
+      "smiles": "Brc1ccc(Br)s1",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "bromo", "conjugated"]
+    },
+    {
+      "id": "dibromobithiophene",
+      "name": "5,5'-Dibromo-2,2'-bithiophene",
+      "smiles": "Brc1ccc(-c2ccc(Br)s2)s1",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "bromo", "conjugated"]
+    },
+    {
+      "id": "dibromofluorene",
+      "name": "9,9-Dioctyl-2,7-dibromofluorene",
+      "smiles": "CCCCCCCCC1(CCCCCCCC)c2cc(Br)ccc2-c2ccc(Br)cc21",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "bromo", "conjugated"]
+    },
+    {
+      "id": "dibromo_dpp",
+      "name": "3,6-Bis(5-bromothiophen-2-yl)-2,5-dimethyl-DPP",
+      "smiles": "CN1C(=O)C2=C(c3ccc(Br)s3)C(=O)N(C)C2=C1c1ccc(Br)s1",
+      "topicity": 2,
+      "factory": "BromoFactory",
+      "tags": ["polymer", "bromo", "conjugated"]
+    },
+    {
+      "id": "tribromobenzene",
+      "name": "1,3,5-Tribromobenzene",
+      "smiles": "Brc1cc(Br)cc(Br)c1",
+      "topicity": 3,
+      "factory": "BromoFactory",
+      "tags": ["cage", "bromo"]
+    },
+    {
+      "id": "terephthalic",
+      "name": "Terephthalic acid",
+      "smiles": "O=C(O)c1ccc(C(=O)O)cc1",
+      "topicity": 2,
+      "factory": "CarboxylicAcidFactory",
+      "tags": ["polymer", "acid"]
+    },
+    {
+      "id": "trimesic",
+      "name": "Trimesic acid",
+      "smiles": "O=C(O)c1cc(C(=O)O)cc(C(=O)O)c1",
+      "topicity": 3,
+      "factory": "CarboxylicAcidFactory",
+      "tags": ["cage", "acid"]
+    },
+    {
+      "id": "diethynylbenzene",
+      "name": "1,4-Diethynylbenzene",
+      "smiles": "C#Cc1ccc(C#C)cc1",
+      "topicity": 2,
+      "factory": "TerminalAlkyneFactory",
+      "tags": ["polymer", "alkyne", "conjugated"]
+    },
+    {
+      "id": "triethynylbenzene",
+      "name": "1,3,5-Triethynylbenzene",
+      "smiles": "C#Cc1cc(C#C)cc(C#C)c1",
+      "topicity": 3,
+      "factory": "TerminalAlkyneFactory",
+      "tags": ["cage", "alkyne", "conjugated"]
+    },
+    {
+      "id": "benzenedithiol",
+      "name": "1,4-Benzenedithiol",
+      "smiles": "Sc1ccc(S)cc1",
+      "topicity": 2,
+      "factory": "ThiolFactory",
+      "tags": ["polymer", "thiol"]
+    },
+    {
+      "id": "ethanedithiol",
+      "name": "1,2-Ethanedithiol",
+      "smiles": "SCCS",
+      "topicity": 2,
+      "factory": "ThiolFactory",
+      "tags": ["polymer", "thiol", "flexible"]
+    },
+    {
+      "id": "benzene",
+      "name": "Benzene",
+      "smiles": "c1ccccc1",
+      "topicity": 0,
+      "factory": null,
+      "tags": ["guest"]
+    },
+    {
+      "id": "cyclohexane",
+      "name": "Cyclohexane",
+      "smiles": "C1CCCCC1",
+      "topicity": 0,
+      "factory": null,
+      "tags": ["guest"]
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "smiles": "O",
+      "topicity": 0,
+      "factory": null,
+      "tags": ["guest"]
+    }
+  ]
+}

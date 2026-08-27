@@ -1,0 +1,154 @@
+{
+  "fg_a": {
+    "type": "stringList",
+    "label": "Your Molecule's Groups",
+    "default": 0,
+    "order": 0,
+    "toolTip": "Which groups of the current molecule react.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "use_selection": {
+    "type": "boolean",
+    "label": "Use Selected Atoms Only",
+    "default": false,
+    "order": 1,
+    "toolTip": "React only the functional groups that touch the current selection, instead of every group in the molecule."
+  },
+  "partner": {
+    "type": "stringList",
+    "label": "Partner Block",
+    "default": 0,
+    "order": 2,
+    "toolTip": "The second building block.",
+    "values": [
+      "(none)",
+      "Terephthalaldehyde (2-topic, Aldehyde)",
+      "Biphenyl-4,4'-dicarbaldehyde (2-topic, Aldehyde)",
+      "2,5-Dihydroxyterephthalaldehyde (2-topic, Aldehyde)",
+      "2,5-Dimethoxyterephthalaldehyde (2-topic, Aldehyde)",
+      "1,3,5-Triformylbenzene (3-topic, Aldehyde)",
+      "1,3,5-Tris(4-formylphenyl)benzene (3-topic, Aldehyde)",
+      "1,3,5-Triformylphloroglucinol (3-topic, Aldehyde)",
+      "Tetrakis(4-formylphenyl)methane (4-topic, Aldehyde)",
+      "p-Phenylenediamine (2-topic, Primary amine)",
+      "Benzidine (2-topic, Primary amine)",
+      "1,3,5-Tris(4-aminophenyl)benzene (3-topic, Primary amine)",
+      "Tetrakis(4-aminophenyl)methane (4-topic, Primary amine)",
+      "1,4-Benzenediboronic acid (2-topic, Boronic acid)",
+      "4,4'-Biphenyldiboronic acid (2-topic, Boronic acid)",
+      "1,2,4,5-Tetrahydroxybenzene (2-topic, Diol)",
+      "2,3,6,7,10,11-Hexahydroxytriphenylene (3-topic, Diol)",
+      "Custom SMILES\u2026"
+    ]
+  },
+  "fg_b": {
+    "type": "stringList",
+    "label": "Partner Groups",
+    "default": 0,
+    "order": 3,
+    "toolTip": "Only used with 'Custom SMILES\u2026'.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "partner_smiles": {
+    "type": "string",
+    "label": "Partner SMILES",
+    "default": "",
+    "order": 4,
+    "toolTip": "Used only when the partner is 'Custom SMILES\u2026'."
+  },
+  "lattice": {
+    "type": "stringList",
+    "label": "Lattice",
+    "default": 0,
+    "order": 5,
+    "toolTip": "Honeycomb needs 2 tritopic + 3 ditopic; Square needs 1 tetratopic + 2 ditopic; Kagome 3 tetratopic + 6 ditopic.",
+    "values": [
+      "Honeycomb",
+      "Hexagonal",
+      "Kagome",
+      "Square",
+      "Linkerless Honeycomb"
+    ]
+  },
+  "size_a": {
+    "type": "integer",
+    "label": "Lattice Repeats a",
+    "default": 1,
+    "minimum": 1,
+    "maximum": 10,
+    "order": 6,
+    "toolTip": "Unit cells along a. Atom counts grow fast."
+  },
+  "size_b": {
+    "type": "integer",
+    "label": "Lattice Repeats b",
+    "default": 1,
+    "minimum": 1,
+    "maximum": 10,
+    "order": 7,
+    "toolTip": "Unit cells along b."
+  },
+  "size_c": {
+    "type": "integer",
+    "label": "Lattice Repeats c",
+    "default": 1,
+    "minimum": 1,
+    "maximum": 10,
+    "order": 8,
+    "toolTip": "Unit cells along c. Layered COFs use 1."
+  },
+  "periodic": {
+    "type": "boolean",
+    "label": "Periodic",
+    "default": false,
+    "order": 9,
+    "toolTip": "Emit a unit cell instead of a finite fragment. Experimental \u2014 see the README."
+  },
+  "cleanup": {
+    "type": "boolean",
+    "label": "Clean Up Geometry",
+    "default": true,
+    "order": 10,
+    "toolTip": "Run stk's MCHammer to remove the worst of the idealised vertex geometry. This is not a force field \u2014 optimize the result afterwards."
+  }
+}

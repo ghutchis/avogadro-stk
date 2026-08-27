@@ -1,0 +1,126 @@
+{
+  "fg_a": {
+    "type": "stringList",
+    "label": "Monomer A Groups",
+    "default": 0,
+    "order": 0,
+    "toolTip": "Which groups of the current molecule react. Auto picks the group that pairs with monomer B.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "use_selection": {
+    "type": "boolean",
+    "label": "Use Selected Atoms Only",
+    "default": false,
+    "order": 1,
+    "toolTip": "React only the functional groups that touch the current selection, instead of every group in the molecule."
+  },
+  "monomer_b": {
+    "type": "stringList",
+    "label": "Monomer B",
+    "default": 0,
+    "order": 2,
+    "toolTip": "Second monomer. Leave as (none) for a homopolymer.",
+    "values": [
+      "(none)",
+      "Benzaldehyde (1-topic, Aldehyde)",
+      "Terephthalaldehyde (2-topic, Aldehyde)",
+      "Glutaraldehyde (2-topic, Aldehyde)",
+      "Aniline (1-topic, Primary amine)",
+      "p-Phenylenediamine (2-topic, Primary amine)",
+      "4,4'-Oxydianiline (2-topic, Primary amine)",
+      "Ethylenediamine (2-topic, Primary amine)",
+      "Phenylboronic acid (1-topic, Boronic acid)",
+      "Catechol (1-topic, Diol)",
+      "Bromobenzene (1-topic, Bromide)",
+      "1,4-Dibromobenzene (2-topic, Bromide)",
+      "4,4'-Dibromobiphenyl (2-topic, Bromide)",
+      "2,5-Dibromothiophene (2-topic, Bromide)",
+      "5,5'-Dibromo-2,2'-bithiophene (2-topic, Bromide)",
+      "9,9-Dioctyl-2,7-dibromofluorene (2-topic, Bromide)",
+      "3,6-Bis(5-bromothiophen-2-yl)-2,5-dimethyl-DPP (2-topic, Bromide)",
+      "Terephthalic acid (2-topic, Carboxylic acid)",
+      "1,4-Diethynylbenzene (2-topic, Terminal alkyne)",
+      "1,4-Benzenedithiol (2-topic, Thiol)",
+      "1,2-Ethanedithiol (2-topic, Thiol)",
+      "Custom SMILES\u2026"
+    ]
+  },
+  "fg_b": {
+    "type": "stringList",
+    "label": "Monomer B Groups",
+    "default": 0,
+    "order": 3,
+    "toolTip": "Only used with 'Custom SMILES\u2026'; library entries carry their own group.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "b_smiles": {
+    "type": "string",
+    "label": "Partner SMILES",
+    "default": "",
+    "order": 4,
+    "toolTip": "Used only when the partner is 'Custom SMILES\u2026'."
+  },
+  "repeating_unit": {
+    "type": "string",
+    "label": "Repeating Unit",
+    "default": "AB",
+    "order": 5,
+    "toolTip": "A is the current molecule, B is monomer B. 'AB' alternates; 'A' is a homopolymer. The chain is then closed into a ring."
+  },
+  "num_repeats": {
+    "type": "integer",
+    "label": "Number of Repeats",
+    "default": 4,
+    "minimum": 1,
+    "maximum": 50,
+    "order": 6,
+    "toolTip": "How many times the repeating unit is repeated."
+  },
+  "cleanup": {
+    "type": "boolean",
+    "label": "Clean Up Geometry",
+    "default": true,
+    "order": 8,
+    "toolTip": "Run stk's MCHammer to remove the worst of the idealised vertex geometry. This is not a force field \u2014 optimize the result afterwards."
+  }
+}

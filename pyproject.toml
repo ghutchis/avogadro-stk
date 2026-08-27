@@ -1,0 +1,77 @@
+[project]
+name = "avogadro-stk"
+version = "0.1.0"
+description = "Build polymers, macrocycles, cages and covalent frameworks in Avogadro 2 using stk"
+authors = [{name = "Geoff Hutchison", email = "geoff.hutchison@gmail.com"}]
+license = "BSD-3-Clause"
+readme = "README.md"
+requires-python = ">= 3.11"
+dependencies = ["stk>=2024.1", "rdkit>=2023.3.2", "mchammer>=2024.2"]
+
+[project.scripts]
+avogadro-stk = "avogadro_stk:main"
+
+[build-system]
+build-backend = "uv_build"
+requires = ["uv_build>=0.10.2,<0.11.0"]
+
+[tool.avogadro]
+minimum-avogadro-version = "1.103"
+
+[[tool.avogadro.menu-commands]]
+identifier = "analyze"
+input-format = "cjson"
+menu = "Build"
+submenu = "Supramolecular"
+item = "Analyze Building Block…"
+menu-priorities = [ 300, 500 ]
+
+[[tool.avogadro.menu-commands]]
+identifier = "polymer"
+input-format = "cjson"
+menu = "Build"
+submenu = "Supramolecular"
+item = "Polymer…"
+user-options = "src/avogadro_stk/customization/polymer_options.json"
+menu-priorities = [ 300, 450 ]
+
+[[tool.avogadro.menu-commands]]
+identifier = "macrocycle"
+input-format = "cjson"
+menu = "Build"
+submenu = "Supramolecular"
+item = "Macrocycle…"
+user-options = "src/avogadro_stk/customization/macrocycle_options.json"
+menu-priorities = [ 300, 440 ]
+
+[[tool.avogadro.menu-commands]]
+identifier = "cage"
+input-format = "cjson"
+menu = "Build"
+submenu = "Supramolecular"
+item = "Cage…"
+user-options = "src/avogadro_stk/customization/cage_options.json"
+menu-priorities = [ 300, 430 ]
+
+[[tool.avogadro.menu-commands]]
+identifier = "cof"
+input-format = "cjson"
+menu = "Build"
+submenu = "Supramolecular"
+item = "Covalent Framework…"
+user-options = "src/avogadro_stk/customization/cof_options.json"
+menu-priorities = [ 300, 420 ]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "linux-aarch64", "osx-64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+avogadro-stk = { path = ".", editable = true }
+
+[tool.pixi.tasks]
+test = "pytest tests -q"
+regen = "python tools/generate_topologies.py && python tools/generate_options.py"
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

@@ -1,0 +1,141 @@
+{
+  "fg_a": {
+    "type": "stringList",
+    "label": "Your Molecule's Groups",
+    "default": 0,
+    "order": 0,
+    "toolTip": "Which groups of the current molecule react.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "use_selection": {
+    "type": "boolean",
+    "label": "Use Selected Atoms Only",
+    "default": false,
+    "order": 1,
+    "toolTip": "React only the functional groups that touch the current selection, instead of every group in the molecule."
+  },
+  "partner": {
+    "type": "stringList",
+    "label": "Partner Block",
+    "default": 0,
+    "order": 2,
+    "toolTip": "The second building block. Its topicity must match what the topology needs.",
+    "values": [
+      "(none)",
+      "Terephthalaldehyde (2-topic, Aldehyde)",
+      "Biphenyl-4,4'-dicarbaldehyde (2-topic, Aldehyde)",
+      "1,3,5-Triformylbenzene (3-topic, Aldehyde)",
+      "1,3,5-Tris(4-formylphenyl)benzene (3-topic, Aldehyde)",
+      "Tetrakis(4-formylphenyl)methane (4-topic, Aldehyde)",
+      "p-Phenylenediamine (2-topic, Primary amine)",
+      "Benzidine (2-topic, Primary amine)",
+      "Ethylenediamine (2-topic, Primary amine)",
+      "(1R,2R)-1,2-Diaminocyclohexane (2-topic, Primary amine)",
+      "1,3,5-Tris(4-aminophenyl)benzene (3-topic, Primary amine)",
+      "Tris(2-aminoethyl)amine (3-topic, Primary amine)",
+      "Tetrakis(4-aminophenyl)methane (4-topic, Primary amine)",
+      "1,3,5-Tribromobenzene (3-topic, Bromide)",
+      "Trimesic acid (3-topic, Carboxylic acid)",
+      "1,3,5-Triethynylbenzene (3-topic, Terminal alkyne)",
+      "Custom SMILES\u2026"
+    ]
+  },
+  "fg_b": {
+    "type": "stringList",
+    "label": "Partner Groups",
+    "default": 0,
+    "order": 3,
+    "toolTip": "Only used with 'Custom SMILES\u2026'.",
+    "values": [
+      "Auto",
+      "Alcohol",
+      "Aldehyde",
+      "Amide",
+      "Boronic acid",
+      "Bromide",
+      "Carboxylic acid",
+      "gem-Dibromide",
+      "gem-Difluoride",
+      "Diol",
+      "Fluoride",
+      "Iodide",
+      "Primary amine",
+      "Ring amine",
+      "Secondary amine",
+      "Terminal alkene",
+      "Terminal alkyne",
+      "Thioacid",
+      "Thiol"
+    ]
+  },
+  "partner_smiles": {
+    "type": "string",
+    "label": "Partner SMILES",
+    "default": "",
+    "order": 4,
+    "toolTip": "Used only when the partner is 'Custom SMILES\u2026'."
+  },
+  "topology": {
+    "type": "stringList",
+    "label": "Topology",
+    "default": 5,
+    "order": 5,
+    "toolTip": "Cage topologies are named for their block counts: FourPlusSix is 4 tritopic + 6 ditopic.",
+    "values": [
+      "EightPlusSixteen",
+      "EightPlusTwelve",
+      "FivePlusTen",
+      "FourPlusEight",
+      "FourPlusFour",
+      "FourPlusSix",
+      "FourPlusSix2",
+      "OnePlusOne",
+      "SixPlusEight",
+      "SixPlusNine",
+      "SixPlusTwelve",
+      "TenPlusTwenty",
+      "ThreePlusSix",
+      "TwelvePlusThirty",
+      "TwentyPlusThirty",
+      "TwoPlusFour",
+      "TwoPlusThree",
+      "TwoPlusTwo"
+    ]
+  },
+  "isomer": {
+    "type": "integer",
+    "label": "Structural Isomer",
+    "default": 0,
+    "minimum": 0,
+    "maximum": 20,
+    "order": 6,
+    "toolTip": "0 is stk's default vertex alignment. Higher values rotate a vertex to give a different isomer."
+  },
+  "cleanup": {
+    "type": "boolean",
+    "label": "Clean Up Geometry",
+    "default": true,
+    "order": 7,
+    "toolTip": "Run stk's MCHammer to remove the worst of the idealised vertex geometry. This is not a force field \u2014 optimize the result afterwards."
+  }
+}
