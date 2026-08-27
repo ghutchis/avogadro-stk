@@ -11,7 +11,7 @@ does not yet represent well.
 
 import stk
 
-from .. import blocks, provenance, resolve, validate
+from .. import blocks, geometry, provenance, resolve, validate
 from ..convert import ConversionError, constructed_to_cjson, formula
 from ..result import molecule, summarize
 
@@ -36,8 +36,9 @@ def run(avo_input, options):
     )
     if partner_block is None:
         raise ConversionError(
-            "A cage needs two different building blocks. Choose a partner "
-            "block from the library, or enter one as SMILES."
+            "A cage needs two different building blocks, but no partner was "
+            "given. Pick one from the 'Partner Block' list, or type a SMILES "
+            "string into the 'Partner SMILES' field."
         )
 
     current_block = resolve.current(
@@ -53,6 +54,10 @@ def run(avo_input, options):
         current_block.topicity, partner_block.topicity,
         label_a="your molecule", label_b=partner_block.name,
     )
+    blocks.check_pair(
+        current_block.factory, partner_block.factory,
+        label_a="your molecule", label_b=partner_block.name,
+    )
 
     estimate = validate.estimate_atoms(
         "cage", topology_name,
@@ -64,24 +69,26 @@ def run(avo_input, options):
     warning = validate.check_size(estimate, "cage")
 
     alignments = _alignments(spec, options.get("isomer", 0))
-    optimizer = stk.MCHammer() if options.get("cleanup", True) else stk.NullOptimizer()
+    plan = geometry.plan(options)
 
     try:
         topology = getattr(stk.cage, topology_name)(
             building_blocks=(current_block.block, partner_block.block),
             vertex_alignments=alignments,
-            optimizer=optimizer,
+            optimizer=geometry.optimizer(plan),
         )
         constructed = stk.ConstructedMolecule(topology)
     except Exception as exc:  # noqa: BLE001 - stk raises a family of types
         raise ConversionError(f"stk could not build the cage: {exc}") from None
+
+    constructed, ff_warning = geometry.refine(constructed, plan)
 
     cjson = constructed_to_cjson(constructed)
     provenance.record(
         cjson,
         topology=f"cage.{topology_name}",
         building_blocks=[current_block.record("A"), partner_block.record("B")],
-        optimizer="MCHammer" if options.get("cleanup", True) else "none",
+        optimizer=plan.applied,
         vertexAlignments=alignments,
     )
 
@@ -99,13 +106,11 @@ def run(avo_input, options):
     )
     notes = [b.note for b in (current_block, partner_block) if b.note]
 
+    warnings = [w for w in (warning, ff_warning) if w]
     return molecule(
         cjson,
-        summarize(
-            [headline, composition, *notes],
-            [warning] if warning else [],
-            cleanup=bool(options.get("cleanup", True)),
-        ),
+        summarize([headline, composition, *notes], warnings,
+                  geometry_note=geometry.note(plan)),
     )
 
 

@@ -4,14 +4,6 @@
 
 """Shaping the JSON Avogadro expects back on stdout."""
 
-#: Every result says this. MCHammer removes the worst of the idealised vertex
-#: geometry and nothing more, and a user who does not know that will take the
-#: bond lengths seriously.
-CLEANUP_NOTE = (
-    "Geometry was cleaned up with MCHammer only — run a force field or "
-    "semi-empirical optimization (Extensions ▸ Optimize Geometry) before "
-    "using this structure."
-)
 
 
 def molecule(cjson, message=None):
@@ -41,10 +33,15 @@ def failure(message):
     return {"error": message}
 
 
-def summarize(lines, warnings=(), cleanup=True):
-    """Assemble a result message from parts, dropping the empty ones."""
+def summarize(lines, warnings=(), geometry_note=None):
+    """Assemble a result message from parts, dropping the empty ones.
+
+    ``geometry_note`` goes last and every result carries one: whatever was or
+    was not run, a user who does not know how good this geometry is will take
+    the bond lengths seriously. See ``geometry.note``.
+    """
     parts = [line for line in lines if line]
     parts.extend(f"Warning: {w}" for w in warnings if w)
-    if cleanup:
-        parts.append(CLEANUP_NOTE)
+    if geometry_note:
+        parts.append(geometry_note)
     return "\n\n".join(parts)

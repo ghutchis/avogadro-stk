@@ -12,7 +12,7 @@ Avogadro handles less predictably, so it sits behind a checkbox.
 
 import stk
 
-from .. import blocks, provenance, resolve, validate
+from .. import blocks, geometry, provenance, resolve, validate
 from ..convert import ConversionError, constructed_to_cjson, formula
 from ..result import molecule, summarize
 
@@ -59,8 +59,9 @@ def run(avo_input, options):
     )
     if partner_block is None and not single_block:
         raise ConversionError(
-            f"{DISPLAY[lattice]} needs {validate.describe('cof', topology_name)}. "
-            f"Choose a partner block from the library, or enter one as SMILES."
+            f"{DISPLAY[lattice]} needs {validate.describe('cof', topology_name)}, "
+            f"but no partner was given. Pick one from the 'Partner Block' "
+            f"list, or type a SMILES string into the 'Partner SMILES' field."
         )
 
     current_block = resolve.current(
@@ -79,6 +80,13 @@ def run(avo_input, options):
         label_b=partner_block.name if partner_block else "the partner",
     )
 
+    blocks.check_pair(
+        current_block.factory,
+        partner_block.factory if partner_block else current_block.factory,
+        label_a="your molecule",
+        label_b=partner_block.name if partner_block else "your molecule",
+    )
+
     sizes = {current_block.topicity: current_block.block.get_num_atoms()}
     if partner_block is not None:
         sizes[partner_block.topicity] = partner_block.block.get_num_atoms()
@@ -90,11 +98,11 @@ def run(avo_input, options):
     if partner_block is not None:
         used.append(partner_block)
 
-    optimizer = stk.MCHammer() if options.get("cleanup", True) else stk.NullOptimizer()
+    plan = geometry.plan(options)
     kwargs = {
         "building_blocks": tuple(b.block for b in used),
         "lattice_size": size,
-        "optimizer": optimizer,
+        "optimizer": geometry.optimizer(plan),
     }
     if not periodic:
         # The non-periodic classes take an explicit flag; the Periodic* ones
@@ -110,17 +118,19 @@ def run(avo_input, options):
             f"stk could not build the framework: {exc}"
         ) from None
 
+    constructed, ff_warning = geometry.refine(constructed, plan, periodic=periodic)
+
     cjson = constructed_to_cjson(constructed, periodic_info)
     provenance.record(
         cjson,
         topology=f"cof.{topology_name}",
         building_blocks=[b.record(role) for b, role in zip(used, "AB")],
-        optimizer="MCHammer" if options.get("cleanup", True) else "none",
+        optimizer=plan.applied,
         latticeSize=list(size),
         periodic=periodic,
     )
 
-    warnings = [warning] if warning else []
+    warnings = [w for w in (warning, ff_warning) if w]
     partner_factory = partner_block.factory if partner_block else current_block.factory
     linkage = blocks.linkage_name(current_block.factory, partner_factory)
 
@@ -156,8 +166,6 @@ def run(avo_input, options):
     notes = [b.note for b in used if b.note]
     return molecule(
         cjson,
-        summarize(
-            [headline, *notes], warnings,
-            cleanup=bool(options.get("cleanup", True)),
-        ),
+        summarize([headline, *notes], warnings,
+                  geometry_note=geometry.note(plan)),
     )

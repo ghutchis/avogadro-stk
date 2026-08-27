@@ -14,6 +14,7 @@ from conftest import avo_input, cjson_from_smiles, invoke
 TFB = "O=Cc1cc(C=O)cc(C=O)c1"
 PDA = "Nc1ccc(N)cc1"
 DIBROMOBENZENE = "Brc1ccc(Br)cc1"
+TRIBROMOBENZENE = "Brc1cc(Br)cc(Br)c1"
 
 
 def atom_count(result):
@@ -44,11 +45,13 @@ def assert_structure(result):
     stk_block = cjson["properties"]["stk"]
     assert stk_block["topology"]
     assert stk_block["buildingBlocks"]
-    assert stk_block["optimizer"] in ("MCHammer", "none")
+    assert stk_block["optimizer"] in (
+        "none", "MCHammer", "MCHammer+MMFF94", "MCHammer+UFF",
+    )
 
-    # The result must never let the user think this geometry is optimized.
-    if stk_block["optimizer"] == "MCHammer":
-        assert "MCHammer" in result["message"]
+    # The result must never let the user think this geometry is final, so
+    # every message ends with a note saying how good it actually is.
+    assert "Optimize" in result["message"] or "optimiz" in result["message"]
 
 
 def test_analyze_reports_groups_and_topologies():
@@ -179,15 +182,20 @@ def test_cof_periodic_emits_unit_cell():
 
 
 def test_selection_restricts_reacting_groups():
-    """A tritopic molecule used as a ditopic one by selecting two groups."""
-    cjson = cjson_from_smiles(TFB)
+    """A tritopic molecule used as a ditopic one by selecting two groups.
+
+    Tribromobenzene rather than triformylbenzene: a homopolymer couples the
+    block to itself, and only groups that react with their own kind (bromide
+    does, aldehyde does not) are a legal homopolymer.
+    """
+    cjson = cjson_from_smiles(TRIBROMOBENZENE)
     payload = {
         "cjson": cjson,
-        # The three aldehyde carbons of triformylbenzene are atoms 1, 5 and 9;
-        # selecting two of them should leave a ditopic block.
-        "selectedAtoms": [0, 1, 4, 5],
+        # The three bromo groups of tribromobenzene are (0, 1), (4, 3) and
+        # (7, 6); selecting two of them should leave a ditopic block.
+        "selectedAtoms": [0, 1, 3, 4],
         "options": {
-            "fg_a": "Aldehyde", "use_selection": True,
+            "fg_a": "Bromide", "use_selection": True,
             "repeating_unit": "A", "num_repeats": 2, "cleanup": True,
         },
     }
@@ -208,3 +216,100 @@ def test_provenance_records_both_blocks():
     assert recipe["buildingBlocks"][1]["topicity"] == 2
     assert recipe["pluginVersion"]
     assert recipe["version"]
+
+
+def _mmff_energy(result):
+    """MMFF94 energy of a returned structure, as a blunt geometry-quality check."""
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+
+    cjson = result["cjson"]
+    numbers = cjson["atoms"]["elements"]["number"]
+    coords = cjson["atoms"]["coords"]["3d"]
+    index = cjson["bonds"]["connections"]["index"]
+    orders = cjson["bonds"]["order"]
+
+    mol = Chem.RWMol()
+    for number in numbers:
+        atom = Chem.Atom(int(number))
+        atom.SetNoImplicit(True)
+        mol.AddAtom(atom)
+    types = {1: Chem.BondType.SINGLE, 2: Chem.BondType.DOUBLE,
+             3: Chem.BondType.TRIPLE}
+    for i, order in enumerate(orders):
+        mol.AddBond(index[2 * i], index[2 * i + 1], types[order])
+    conformer = Chem.Conformer(mol.GetNumAtoms())
+    for i in range(mol.GetNumAtoms()):
+        conformer.SetAtomPosition(i, tuple(coords[3 * i:3 * i + 3]))
+    mol.AddConformer(conformer)
+    mol = mol.GetMol()
+    Chem.SanitizeMol(mol)
+
+    properties = AllChem.MMFFGetMoleculeProperties(mol)
+    return AllChem.MMFFGetMoleculeForceField(mol, properties).CalcEnergy()
+
+
+def test_force_field_actually_improves_the_geometry():
+    """MCHammer + MMFF94 must be a real improvement, not just a slower path."""
+    base = {
+        "partner": "Custom SMILES…", "partner_smiles": "O=CC(C=O)CC=O",
+        "topology": "FourPlusSix",
+    }
+    collapsed = invoke("cage", avo_input("NCCN", dict(base, cleanup="MCHammer")))
+    refined = invoke("cage", avo_input("NCCN",
+                                       dict(base, cleanup="MCHammer + MMFF94")))
+    assert_structure(collapsed)
+    assert_structure(refined)
+
+    assert collapsed["cjson"]["properties"]["stk"]["optimizer"] == "MCHammer"
+    assert refined["cjson"]["properties"]["stk"]["optimizer"] == "MCHammer+MMFF94"
+    # Same molecule, so the energies are directly comparable.
+    assert atom_count(collapsed) == atom_count(refined)
+    assert _mmff_energy(refined) < _mmff_energy(collapsed)
+
+
+def test_force_field_falls_back_to_uff_for_boron():
+    """MMFF94 has no boron; a boroxine framework must still be optimized."""
+    result = invoke("cof", avo_input("OB(O)c1cc(B(O)O)cc(B(O)O)c1", {
+        "lattice": "LinkerlessHoneycomb", "fg_a": "Boronic acid",
+        "size_a": 1, "size_b": 1, "size_c": 1,
+        "cleanup": "MCHammer + MMFF94",
+    }))
+    assert_structure(result)
+    assert result["cjson"]["properties"]["stk"]["optimizer"] == "MCHammer+UFF"
+    assert "UFF" in result["message"]
+
+
+def test_force_field_is_skipped_for_periodic_cells():
+    """RDKit has no PBC, so optimizing would pull atoms out of the cell."""
+    result = invoke("cof", avo_input(TFB, {
+        "lattice": "Honeycomb", "periodic": True,
+        "partner": "p-Phenylenediamine (2-topic, Primary amine)",
+        "size_a": 1, "size_b": 1, "size_c": 1,
+        "cleanup": "MCHammer + MMFF94",
+    }))
+    assert_structure(result)
+    assert result["cjson"]["properties"]["stk"]["optimizer"] == "MCHammer"
+    assert "periodic" in result["message"].lower()
+
+
+def test_cleanup_none_leaves_the_idealised_geometry():
+    result = invoke("cage", avo_input("NCCN", {
+        "partner": "Custom SMILES…", "partner_smiles": "O=CC(C=O)CC=O",
+        "topology": "FourPlusSix", "cleanup": "None",
+    }))
+    assert_structure(result)
+    assert result["cjson"]["properties"]["stk"]["optimizer"] == "none"
+    assert "idealised" in result["message"]
+
+
+def test_legacy_boolean_cleanup_still_understood():
+    """The option used to be a checkbox; saved settings may still say so."""
+    on = invoke("polymer", avo_input(DIBROMOBENZENE, {
+        "repeating_unit": "A", "num_repeats": 3, "cleanup": True,
+    }))
+    off = invoke("polymer", avo_input(DIBROMOBENZENE, {
+        "repeating_unit": "A", "num_repeats": 3, "cleanup": False,
+    }))
+    assert on["cjson"]["properties"]["stk"]["optimizer"] == "MCHammer"
+    assert off["cjson"]["properties"]["stk"]["optimizer"] == "none"

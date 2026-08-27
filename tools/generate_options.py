@@ -21,7 +21,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from avogadro_stk import blocks, library, validate  # noqa: E402
+from avogadro_stk import blocks, geometry, library, validate  # noqa: E402
 from avogadro_stk.features.chains import KEEP_GROUPS  # noqa: E402
 from avogadro_stk.features.cof import DISPLAY as COF_LATTICES  # noqa: E402
 
@@ -48,11 +48,13 @@ def selection_option(order):
 
 def cleanup_option(order):
     return {
-        "type": "boolean", "label": "Clean Up Geometry", "default": True,
-        "order": order,
-        "toolTip": "Run stk's MCHammer to remove the worst of the idealised "
-                   "vertex geometry. This is not a force field — optimize the "
-                   "result afterwards.",
+        "type": "stringList", "label": "Clean Up Geometry",
+        "default": geometry.LEVELS.index(geometry.REFINE), "order": order,
+        "toolTip": "MCHammer collapses stk's idealised vertex geometry to sane "
+                   "bond lengths; it is not a force field. Adding MMFF94 fixes "
+                   "angles and contacts too (UFF is used for elements MMFF94 "
+                   "does not cover, and it is skipped for periodic cells).",
+        "values": list(geometry.LEVELS),
     }
 
 

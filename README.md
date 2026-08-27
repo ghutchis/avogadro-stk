@@ -25,13 +25,24 @@ All under **Build ▸ Supramolecular**:
 
 ## Geometry: read this before using a structure
 
-The plugin runs `stk.MCHammer()` and **stops there**. That removes the worst of
-the idealized-vertex geometry and nothing more — it is not a force field, and
-the bond lengths and angles it produces are not meaningful.
+stk places building blocks on idealized vertices. The **Clean Up Geometry**
+dropdown decides what happens next:
 
-Run a real optimization (**Extensions ▸ Optimize Geometry**, or one of the
-xtb / MACE / ANI plugins) before doing anything with the result. Every result
-message says so too.
+| Setting | What it does |
+|---------|--------------|
+| None | stk's raw vertex geometry. Bond lengths across the new bonds are meaningless. |
+| MCHammer | `stk.MCHammer()` collapses the structure to sane bond lengths. Not a force field: angles, torsions and contacts are still wrong. |
+| MCHammer + MMFF94 (default) | The above, then RDKit's MMFF94 over the whole assembly. |
+
+MMFF94 has no parameters for boron, so boronate-ester and boroxine structures
+fall back to **UFF** automatically; the result message says which ran. The
+force field is skipped for periodic cells (RDKit has no periodic boundary and
+would pull the structure out of the unit cell) and above 2000 atoms.
+
+Even with MMFF94 this is a *starting* geometry. Run a method suited to your
+chemistry (**Extensions ▸ Optimize Geometry**, or one of the xtb / MACE / ANI
+plugins) before reporting anything. Every result message says how good the
+geometry it carries actually is.
 
 ## Functional groups
 

@@ -35,13 +35,20 @@ class Block:
 def partner(choice, smiles, group_choice, minimum=1, role="partner"):
     """Resolve the second building block from its three dialog options.
 
-    Returns None when the user chose "(none)".
+    Returns None when the user wants no partner at all.
     """
+    text = (smiles or "").strip()
+
     if not choice or choice == library.NONE_LABEL:
-        return None
+        # Typing a SMILES without also switching the drop-down away from
+        # "(none)" is the obvious mistake to make in this dialog, and it can
+        # only mean one thing — nobody fills in a SMILES field and means "no
+        # partner" — so honour the text rather than rejecting the run.
+        if not text:
+            return None
+        choice = library.CUSTOM_LABEL
 
     if choice == library.CUSTOM_LABEL:
-        text = (smiles or "").strip()
         if not text:
             raise ConversionError(
                 f"'{library.CUSTOM_LABEL}' was selected but the SMILES field "

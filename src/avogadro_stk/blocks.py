@@ -56,6 +56,9 @@ REACTION_PAIRS = {
     frozenset({"TerminalAlkeneFactory"}): "C=C",
     frozenset({"ThiolFactory"}): "disulfide",
     frozenset({"AlcoholFactory"}): "ether",
+    frozenset({"BoronicAcidFactory"}): "boroxine",
+    frozenset({"BromoFactory", "IodoFactory"}): "C–C",
+    frozenset({"ThiolFactory", "TerminalAlkeneFactory"}): "thioether",
 }
 
 #: Human-readable names, so messages do not read like source code.
@@ -110,6 +113,67 @@ def factory_from_display(text):
 def linkage_name(factory_a, factory_b):
     """Name of the bond formed between two factories, or a generic fallback."""
     return REACTION_PAIRS.get(frozenset({factory_a, factory_b}), "new")
+
+
+def reacts_with(factory_name):
+    """Display names of the groups this one forms a recognised linkage with."""
+    partners = []
+    for pair in sorted(REACTION_PAIRS, key=lambda p: sorted(p)):
+        if factory_name not in pair:
+            continue
+        other = next(iter(pair - {factory_name}), factory_name)
+        partners.append(
+            "themselves" if other == factory_name else display(other).lower()
+        )
+    return partners
+
+
+def check_pair(factory_a, factory_b, label_a="your molecule",
+               label_b="the partner"):
+    """Refuse two functional groups that do not form a known linkage.
+
+    stk joins any two functional groups it is given: it deletes each group's
+    leaving atoms and bonds the remnants together. For a combination that is
+    not real chemistry that silently yields a plausible-looking structure made
+    of the wrong elements — a bromide reacted with an aldehyde loses every Br
+    and every O and comes back a hydrocarbon — so the pairing is rejected here
+    rather than built and shown to the user as a result.
+    """
+    if frozenset({factory_a, factory_b}) in REACTION_PAIRS:
+        return
+
+    options = reacts_with(factory_a)
+    if options:
+        hint = (
+            f"{display(factory_a)} groups react with "
+            f"{_listing(options)}. Choose a partner with one of those groups, "
+            f"or pick different groups instead of Auto."
+        )
+    else:
+        hint = (
+            f"{display(factory_a)} has no partner group this plugin "
+            f"recognises. Pick different groups instead of Auto."
+        )
+
+    same = factory_a == factory_b
+    combination = (
+        f"{display(factory_a)} groups ({label_a}) do not react with each other"
+        if same else
+        f"{display(factory_a)} ({label_a}) and {display(factory_b)} "
+        f"({label_b}) do not form a known linkage"
+    )
+    raise ConversionError(
+        f"{combination}. stk would still join them — it deletes the atoms of "
+        f"both groups and bonds what is left — but the result would not be "
+        f"the chemistry you asked for. {hint}"
+    )
+
+
+def _listing(items):
+    """'a', 'a and b', 'a, b and c'."""
+    if len(items) == 1:
+        return items[0]
+    return ", ".join(items[:-1]) + " and " + items[-1]
 
 
 class FGMatch:

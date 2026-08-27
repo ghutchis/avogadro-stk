@@ -114,3 +114,64 @@ def test_metal_cage_is_refused_clearly():
         "partner": PDA_LABEL, "topology": "M4L6Tetrahedron",
     })))
     assert "dative" in message.lower() or "metal" in message.lower()
+
+
+def test_incompatible_functional_groups_are_refused():
+    """A dibromide and a trialdehyde have the right topicities but no reaction.
+
+    stk would build this: it deletes both groups' atoms and makes a C–C bond,
+    handing back a hydrocarbon cage with no Br and no O in it. Reporting that
+    as a result is worse than refusing.
+    """
+    message = error_of(invoke("cage", avo_input("BrCCCBr", {
+        "partner": "Custom SMILES…", "partner_smiles": "O=CC(C=O)CC=O",
+        "topology": "FourPlusSix", "cleanup": True,
+    })))
+    assert "Bromide" in message and "Aldehyde" in message
+    assert "linkage" in message.lower()
+
+
+def test_incompatible_self_reaction_is_refused():
+    """An aldehyde does not homopolymerize; say so instead of building it."""
+    message = error_of(invoke("polymer", avo_input("O=Cc1ccc(C=O)cc1", {
+        "repeating_unit": "A", "num_repeats": 3, "cleanup": True,
+    })))
+    assert "Aldehyde" in message
+    assert "primary amine" in message
+
+
+def test_compatible_pairs_still_build():
+    """The guard must not reject real chemistry: imine cage, bromide polymer."""
+    for feature, payload in (
+        ("cage", avo_input("NCCN", {
+            "partner": "Custom SMILES…", "partner_smiles": "O=CC(C=O)CC=O",
+            "topology": "FourPlusSix", "cleanup": True,
+        })),
+        ("polymer", avo_input("Brc1ccc(Br)cc1", {
+            "repeating_unit": "A", "num_repeats": 3, "cleanup": True,
+        })),
+    ):
+        result = invoke(feature, payload)
+        assert "error" not in result, result.get("error")
+
+
+def test_smiles_typed_without_switching_the_dropdown():
+    """The obvious dialog mistake: fill in the SMILES, leave the list alone.
+
+    Nobody types a SMILES and means "no partner", so the text wins over the
+    untouched "(none)" rather than the run being refused.
+    """
+    result = invoke("cage", avo_input("NCCN", {
+        "partner": "(none)", "partner_smiles": "O=CC(C=O)CC=O",
+        "topology": "FourPlusSix", "cleanup": True,
+    }))
+    assert "error" not in result, result.get("error")
+    assert "imine" in result["message"]
+
+
+def test_no_partner_at_all_names_both_dialog_fields():
+    message = error_of(invoke("cage", avo_input("NCCN", {
+        "partner": "(none)", "partner_smiles": "", "topology": "FourPlusSix",
+    })))
+    assert "Partner Block" in message
+    assert "Partner SMILES" in message

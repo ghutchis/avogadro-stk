@@ -12,7 +12,7 @@ is most of what this module does.
 
 import stk
 
-from .. import blocks, provenance, resolve, validate
+from .. import blocks, geometry, provenance, resolve, validate
 from ..convert import ConversionError, constructed_to_cjson, formula
 from ..result import molecule, summarize
 
@@ -98,6 +98,13 @@ def run(avo_input, options, cyclic=False):
     unit = _repeating_unit(options.get("repeating_unit", "AB"), available)
     repeats = max(1, int(options.get("num_repeats", 3) or 1))
 
+    blocks.check_pair(
+        current_block.factory,
+        partner_block.factory if partner_block else current_block.factory,
+        label_a="your molecule",
+        label_b=partner_block.name if partner_block else "your molecule",
+    )
+
     cap_block = None
     if not cyclic:
         cap_choice = options.get("end_cap")
@@ -110,6 +117,10 @@ def run(avo_input, options, cyclic=False):
                     f"End caps must have exactly one reactive group, but "
                     f"{cap_block.name} has {cap_block.topicity}."
                 )
+            blocks.check_pair(
+                current_block.factory, cap_block.factory,
+                label_a="your molecule", label_b=cap_block.name,
+            )
 
     # stk indexes the repeating unit into the building block tuple, so the cap
     # is appended and the unit is expanded here rather than repeated by stk.
@@ -135,20 +146,24 @@ def run(avo_input, options, cyclic=False):
             f"geometry will be poor even after cleanup."
         )
 
-    optimizer = stk.MCHammer() if options.get("cleanup", True) else stk.NullOptimizer()
+    plan = geometry.plan(options)
     factory = stk.macrocycle.Macrocycle if cyclic else stk.polymer.Linear
     try:
         topology = factory(
             building_blocks=tuple(b.block for b in chain),
             repeating_unit=expanded,
             num_repeating_units=num_units,
-            optimizer=optimizer,
+            optimizer=geometry.optimizer(plan),
         )
         constructed = stk.ConstructedMolecule(topology)
     except Exception as exc:  # noqa: BLE001 - stk raises a family of types
         raise ConversionError(
             f"stk could not build the {what}: {exc}"
         ) from None
+
+    constructed, ff_warning = geometry.refine(constructed, plan)
+    if ff_warning:
+        warnings.append(ff_warning)
 
     cjson = constructed_to_cjson(constructed)
     provenance.record(
@@ -157,7 +172,7 @@ def run(avo_input, options, cyclic=False):
         building_blocks=[
             b.record(LETTERS[i]) for i, b in enumerate(chain)
         ],
-        optimizer="MCHammer" if options.get("cleanup", True) else "none",
+        optimizer=plan.applied,
         repeatingUnit=expanded,
         numRepeatingUnits=num_units,
     )
@@ -173,9 +188,6 @@ def run(avo_input, options, cyclic=False):
 
     return molecule(
         cjson,
-        summarize(
-            [headline, *notes],
-            warnings,
-            cleanup=bool(options.get("cleanup", True)),
-        ),
+        summarize([headline, *notes], warnings,
+                  geometry_note=geometry.note(plan)),
     )

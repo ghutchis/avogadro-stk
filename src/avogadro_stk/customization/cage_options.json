@@ -132,10 +132,15 @@
     "toolTip": "0 is stk's default vertex alignment. Higher values rotate a vertex to give a different isomer."
   },
   "cleanup": {
-    "type": "boolean",
+    "type": "stringList",
     "label": "Clean Up Geometry",
-    "default": true,
+    "default": 2,
     "order": 7,
-    "toolTip": "Run stk's MCHammer to remove the worst of the idealised vertex geometry. This is not a force field \u2014 optimize the result afterwards."
+    "toolTip": "MCHammer collapses stk's idealised vertex geometry to sane bond lengths; it is not a force field. Adding MMFF94 fixes angles and contacts too (UFF is used for elements MMFF94 does not cover, and it is skipped for periodic cells).",
+    "values": [
+      "None",
+      "MCHammer",
+      "MCHammer + MMFF94"
+    ]
   }
 }
