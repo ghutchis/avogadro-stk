@@ -1,12 +1,12 @@
 [project]
 name = "avogadro-stk"
-version = "0.1.0"
+version = "0.1.1"
 description = "Build polymers, macrocycles, cages and covalent frameworks in Avogadro 2 using stk"
 authors = [{name = "Geoff Hutchison", email = "geoff.hutchison@gmail.com"}]
 license = "BSD-3-Clause"
 readme = "README.md"
 requires-python = ">= 3.11"
-dependencies = ["stk>=2024.1", "rdkit>=2023.3.2", "mchammer>=2024.2"]
+dependencies = ["stk>=2026.10.25.0", "rdkit>=2023.3.2", "mchammer>=2026.10.21.0"]
 
 [project.scripts]
 avogadro-stk = "avogadro_stk:main"
@@ -14,6 +14,11 @@ avogadro-stk = "avogadro_stk:main"
 [build-system]
 build-backend = "uv_build"
 requires = ["uv_build>=0.10.2,<0.11.0"]
+
+# .github/workflows/update-dependencies.yml checks PyPI / conda-forge daily for
+# these packages and opens a PR raising their ">=" floors and the version.
+[tool.update-dependencies]
+track = ["stk", "mchammer"]
 
 [tool.avogadro]
 minimum-avogadro-version = "1.103"
